@@ -4,6 +4,10 @@
         v-for="(list,index) in todoList" 
         :class="{'done':list.status==='done'}" >
 
+
+    
+
+
    <p>{{list.memo}} </p> 
    <button @click="$emit('statusControl',index,'done') " >DONE</button>
    <button @click="$emit('statusControl',index,'created' )" >BACK</button>

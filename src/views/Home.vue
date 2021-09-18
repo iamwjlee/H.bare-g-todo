@@ -2,11 +2,15 @@
   <div class="home">
     <h2>Home</h2>
     <header>
-      <p>button block test</p>
-      <!-- send button name, color -->
-      <Button text="buttonTest1" color="gray" />
-<!--       <Button text="buttonTest2" color="yellow" />
- -->    
+      <div> 
+        <p>button block test</p>
+      </div>
+      <div>
+        <Button @click="updateVisibleTodos" text="buttonTest1" color="gray" />
+        <Button @click="updatePage(0)" text="buttonTest2" color="yellow" />
+   
+  
+      </div>
     </header>
     <hr>
     <List  
@@ -39,7 +43,20 @@ export default {
   name: 'Home',
   data() {
     return {
-      todoList: [],
+      todoList: [
+        {memo: '111111'},
+        {memo: '2222222'},
+        {memo: '33333'},
+        {memo: '4444444'},
+        {memo: '555555'},
+        {memo: '6666666'},
+        {memo: '7777777'}
+
+      ],
+      currnetPage: 2,
+      pageSize: 3,
+      visibleTodos: []
+
     }
   },
   components: {
@@ -48,7 +65,32 @@ export default {
     Button
     //HelloWorld
   },
+  beforeMount: function(){
+    console.log('beforeMount')
+    this.updateVisibleTodos();
+  },
   methods: {
+
+    updatePage(pageNumber) {
+      this.currnetPage=pageNumber
+      console.log(pageNumber)
+      this.updateVisibleTodos();
+    },
+    updateVisibleTodos() {
+
+      this.visibleTodos = this.todoList.slice(this.currnetPage*this.pageSize,
+        (this.currnetPage*this.pageSize) + this.pageSize )
+
+      //if no visible page to back page
+      if(this.visibleTodos.length== 0 && this.currnetPage > 0) {
+        console.log('last')
+        this.updatePage(this.currnetPage-1)
+      }
+
+      for(let i=0;i<this.visibleTodos.length;i++)
+      console.log(this.visibleTodos[i])
+
+    },
     listAdd(memo) {
       console.log(memo)
       this.todoList.push( {memo: memo,status: 'created'})
