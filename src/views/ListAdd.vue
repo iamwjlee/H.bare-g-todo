@@ -1,8 +1,9 @@
 <template>
 <div>
-    <h2>ListAdd</h2>
+    <h2>{{titleListAdd}}</h2>
     <textarea name="" id="" cols="60" rows="10" v-model="memo" ></textarea> <br>
     memo : {{memo}}
+    <br>
     <button @click="listAdd" >List ADD </button>
     <button @click="listEdit" >List EDIT </button>
 
@@ -12,6 +13,7 @@
 <script>
 export default {
     name: 'ListAdd',
+    props: ['titleListAdd'],
     emits: ['list-add','listEdit'],
     data() {
         return {
