@@ -1,4 +1,4 @@
-# bare-g-todo2
+# bare-g-todo
 
 ## Project setup
 ```
