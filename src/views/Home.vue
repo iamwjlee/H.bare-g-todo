@@ -6,7 +6,7 @@
         <p>button block test</p>
       </div>
       <div>
-        <Button @click="updateVisibleTodos" text="buttonTest1" color="gray" />
+        <Button @click="updatePage(1)" text="buttonTest1" color="gray" />
         <Button @click="updatePage(0)" text="buttonTest2" color="yellow" />
    
   
@@ -53,9 +53,9 @@ export default {
         {memo: '7777777'}
 
       ],
-      currnetPage: 2,
+      currnetPage: 0,
       pageSize: 3,
-      visibleTodos: []
+      visibleTodoList: []
 
     }
   },
@@ -78,17 +78,17 @@ export default {
     },
     updateVisibleTodos() {
 
-      this.visibleTodos = this.todoList.slice(this.currnetPage*this.pageSize,
+      this.visibleTodoList = this.todoList.slice(this.currnetPage*this.pageSize,
         (this.currnetPage*this.pageSize) + this.pageSize )
 
       //if no visible page to back page
-      if(this.visibleTodos.length== 0 && this.currnetPage > 0) {
+      if(this.visibleTodoList.length== 0 && this.currnetPage > 0) {
         console.log('last')
         this.updatePage(this.currnetPage-1)
       }
 
-      for(let i=0;i<this.visibleTodos.length;i++)
-      console.log(this.visibleTodos[i])
+      for(let i=0;i<this.visibleTodoList.length;i++)
+      console.log(this.visibleTodoList[i])
 
     },
     listAdd(memo) {
@@ -126,9 +126,9 @@ header {
   justify-content:  space-between;
   align-content: center;
   margin-bottom: 1px;
+  justify-items: center;
 }
 .btn {
-  display: inline-block;
   border-radius: 2px;
   border: none;
   font-size: 15px;
