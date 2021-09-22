@@ -94,6 +94,7 @@ export default {
     listAdd(memo) {
       console.log(memo)
       this.todoList.push( {memo: memo,status: 'created'})
+      //this.updateVisibleTodos()
 
     },
     listDelete(index) {

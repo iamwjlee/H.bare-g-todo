@@ -8,11 +8,11 @@
                 v-for="(list,index) in visibleTodoList" 
                 :class="{'done':list.status==='done'}" >
         
-            <div >
+            <div class="item">
                 <p>{{list.memo}} </p> 
             </div>
             
-            <div>
+            <div class="item2">
                 <button @click="$emit('statusControl',index,'done') " >DONE</button>
                 <button @click="$emit('statusControl',index,'created' )" >BACK</button>
                 <button @click="listEdit(list.memo,index)" > EDIT</button>
@@ -53,7 +53,17 @@ export default {
 
         }
     },
+    updated: function() {
+        console.log('updated List.vue')
+        //this.updateVisibleTodos2();
+    },
+    computed: {
+        updateVisibleTodos2() {
+            return this.visibleTodoList
+        },
 
+
+    },
     methods: {
         totalPages() {
             return  Math.ceil(this.todoList.length / this.pageSize)
@@ -102,11 +112,21 @@ export default {
     .container
     {
         display: flex;
-        justify-content:  space-between;
-        align-content: center;
-
+        justify-content: space-between;
+        align-items: center;
+        background-color: beige;
+        padding: 4px 4px;
+        margin-bottom: 5px;
     }    
-
+    .item {
+        font-size: 13px;
+        padding: 1px 1px;
+    }
+    .item2 button{
+        font-size: 12px;
+        padding:1px 10px;
+        margin-right: 3px;
+    }
     .done {
         background-color: #00000020;
         /* background-color: rgba(0,0,0,0.1); */
