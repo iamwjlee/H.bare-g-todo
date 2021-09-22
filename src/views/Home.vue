@@ -3,19 +3,25 @@
     <h2>Home</h2>
     <header>
       <div> 
-        <p>button block test</p>
+        <p>buttonVue test</p>
       </div>
-      <div>
-        <Button @click="updatePage(1)" text="buttonTest1" color="gray" />
-        <Button @click="updatePage(0)" text="buttonTest2" color="yellow" />
+      <div >
+        <Button @click="testButton1" text="buttonTest1" color="gray" />
+        <Button @click="testButton2" text="buttonTest2" color="yellow" />
+        <Button @click="testButton3" text="buttonTest3" color="yellow" />
    
   
       </div>
     </header>
     <hr>
     <List  
+        :totalPages="totalPages()"
+        :pageSize="pageSize"
+        :currentPage="currentPage"
         titleList="List"
-        :todoList="todoList"
+        :visibleTodoList="visibleTodoList"
+        @nextLink="updatePage(currentPage+1)"
+        @prevLink="updatePage(currentPage-1)"
         @statusControl="statusControl"
         @list-delete="listDelete" 
         @listEdit="listEdit" />
@@ -23,7 +29,7 @@
     <ListAdd 
         titleListAdd="ListAdd"
         @list-add="listAdd" 
-        @listEdit="listEdit2" />
+        @listEdit="listAddEdit" />
     <hr>
   </div>
 </template>
@@ -45,15 +51,15 @@ export default {
     return {
       todoList: [
         {memo: '111111'},
-        {memo: '2222222'},
-        {memo: '33333'},
-        {memo: '4444444'},
+        {memo: '222222'},
+        {memo: '333333'},
+        {memo: '444444'},
         {memo: '555555'},
-        {memo: '6666666'},
-        {memo: '7777777'}
+        {memo: '666666'},
+        {memo: '777777'}
 
       ],
-      currnetPage: 0,
+      currentPage: 0,
       pageSize: 3,
       visibleTodoList: []
 
@@ -66,43 +72,77 @@ export default {
     //HelloWorld
   },
   beforeMount: function(){
-    console.log('beforeMount')
+    console.log('beforeMount in Home')
     this.updateVisibleTodos();
   },
   methods: {
 
+    saveFile: function() {
+      const data=JSON.stringify(this.todoList)
+      window.localStorage.setItem('myTodo',data)
+      console.log(JSON.parse(window.localStorage.getItem('myTodo')))
+
+    },
+    testButton1() {
+      console.log(JSON.parse(window.localStorage.getItem('myTodo')))
+      //updatePage(0)
+    },
+    testButton2() {
+      for(let i=0;i<this.todoList.length;i++)
+        console.log(this.todoList[i])
+      this.saveFile()
+
+    },
+    testButton3() {
+      this.pageSize=10
+      this.updateVisibleTodos();
+    },
+    totalPages() {
+        return   Math.ceil(this.todoList.length / this.pageSize)
+    },
+
+
     updatePage(pageNumber) {
-      this.currnetPage=pageNumber
+      this.currentPage=pageNumber
       console.log(pageNumber)
       this.updateVisibleTodos();
     },
     updateVisibleTodos() {
-
-      this.visibleTodoList = this.todoList.slice(this.currnetPage*this.pageSize,
-        (this.currnetPage*this.pageSize) + this.pageSize )
+      
+      this.visibleTodoList = this.todoList.slice(this.currentPage*this.pageSize,
+        (this.currentPage*this.pageSize) + this.pageSize )
 
       //if no visible page to back page
-      if(this.visibleTodoList.length== 0 && this.currnetPage > 0) {
+      if(this.visibleTodoList.length== 0 && this.currentPage > 0) {
         console.log('last')
-        this.updatePage(this.currnetPage-1)
+        this.updatePage(this.currentPage-1)
       }
+      console.log(this.currentPage)
+      console.log(this.pageSize)
+
+      console.log(this.visibleTodoList.length)
 
       for(let i=0;i<this.visibleTodoList.length;i++)
-      console.log(this.visibleTodoList[i])
+        console.log(this.visibleTodoList[i])
 
     },
     listAdd(memo) {
       console.log(memo)
       this.todoList.push( {memo: memo,status: 'created'})
-      //this.updateVisibleTodos()
+      this.updateVisibleTodos()
 
     },
     listDelete(index) {
       console.log('delete')
       this.todoList.splice(index,1) 
+      this.updateVisibleTodos()
     },
     statusControl(index,status) {
-      this.todoList[index].status=status
+      console.log(index,status,this.currentPage)
+      this.visibleTodoList[index].status=status
+      this.todoList[this.currentPage*this.pageSize+index].status=status
+      this.updateVisibleTodos()
+
     },
     listEdit(memo,index) {
       const aa={
@@ -112,8 +152,11 @@ export default {
       this.emitter.emit('e-msg',aa)
 
     },
-    listEdit2(memo) {
-      this.todoList[memo.index].memo=memo.memo
+    listAddEdit(memo) {
+      this.visibleTodoList[memo.index].memo=memo.memo
+      this.todoList[this.currentPage*this.pageSize+memo.index].memo=memo.memo
+
+      //this.todoList[memo.index].memo=memo.memo
 
     }
   }
@@ -125,7 +168,7 @@ export default {
 header {
   display: flex;
   justify-content:  space-between;
-  align-content: center;
+  align-items: center;
   margin-bottom: 1px;
   justify-items: center;
 }
@@ -134,5 +177,10 @@ header {
   border: none;
   font-size: 15px;
 }
+
+header button {
+  margin-right: 5px;
+}
+
 
 </style>

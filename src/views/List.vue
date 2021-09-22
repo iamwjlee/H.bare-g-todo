@@ -1,9 +1,10 @@
 <template>
- <h2>{{titleList}}</h2>
+ 
 
  <div class="list-1">
-
+<h2>{{titleList}}</h2>
      <div >
+        
         <div class="container"   :key="index" 
                 v-for="(list,index) in visibleTodoList" 
                 :class="{'done':list.status==='done'}" >
@@ -27,9 +28,10 @@
      </div>
     <br>
     <div>
-        <button v-if="showPreviousLink()" @click="updatePage(currnetPage-1)" > prev </button>
-        {{currnetPage+1}} of {{totalPages()}}
-        <button v-if="showNextLink()" @click="updatePage(currnetPage+1)" > next </button>
+        <!-- <button v-if="showPreviousLink()" @click="updatePage(currentPage-1)" > prev </button> -->
+        <button v-if="showPreviousLink()" @click="$emit('prevLink')" > prev </button>
+        {{currentPage+1}} of {{totalPages}}
+        <button @click="$emit('nextLink')" > next </button>
 
     </div>
 
@@ -39,63 +41,23 @@
 <script>
 export default {
     name: 'List',
-    props: ['todoList','titleList'],
-    emits: ['list-delete','statusControl','listEdit'],
-    beforeMount: function(){
-        console.log('beforeMount in List')
-        this.updateVisibleTodos();
-    },
+    props: ['visibleTodoList','titleList','pageSize','currentPage','totalPages'],
+    emits: ['list-delete','statusControl','listEdit','nextLink','prevLink'],
     data() {
         return {
-            currnetPage: 0,
-            pageSize: 3,
-            visibleTodoList: []
-
         }
     },
-    updated: function() {
-        console.log('updated List.vue')
-        //this.updateVisibleTodos2();
-    },
-    computed: {
-        updateVisibleTodos2() {
-            return this.visibleTodoList
-        },
-
-
-    },
     methods: {
-        totalPages() {
-            return  Math.ceil(this.todoList.length / this.pageSize)
-        },
         showPreviousLink() {
-            return this.currnetPage==0 ? false : true
+            return this.currentPage==0 ? false : true
         },
         showNextLink() {
-            return this.currnetPage ==(this.totalPages()-1) ? false : true
+
+            return this.currentPage ==(this.totalPages-1) ? false : true
+
         },
         listEdit(memo,index) {
             this.$emit('listEdit',memo,index)
-
-        },
-        updatePage(pageNumber) {
-            this.currnetPage=pageNumber
-            console.log(pageNumber)
-            this.updateVisibleTodos();
-        },
-        updateVisibleTodos() {
-
-            this.visibleTodoList = this.todoList.slice(this.currnetPage*this.pageSize,
-                (this.currnetPage*this.pageSize) + this.pageSize )
-
-            //if no visible page to back page
-            if(this.visibleTodoList.length== 0 && this.currnetPage > 0) {
-                console.log('last')
-                this.updatePage(this.currnetPage-1)
-            }
-
-            for(let i=0;i<this.visibleTodoList.length;i++)
-            console.log(this.visibleTodoList[i])
 
         },
 
