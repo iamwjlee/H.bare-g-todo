@@ -1,5 +1,21 @@
 <template>
   <div class="about">
+
+    <section class="game-board">
+      <Card 
+        v-for="(card,index) in cardList" 
+        :key="`card-${index}`" 
+        :visible="card.visible"
+        @select-card="flipCard"
+        :position="card.position"
+        :value="card.value" />
+    </section>
+    <h2> {{userSelection}}  </h2>
+    <h2> {{status}}  </h2>
+
+    <br>
+
+
     <button @click="darkMode=!darkMode">Clik me</button>
     <div class="textbox" :class="{'dark':darkMode}" >
       This is an about page
@@ -42,9 +58,61 @@
 
 <script>
 
-
-
+import {ref,watch} from 'vue'
+import Card from './Card'
 export default {
+  name: 'About',
+  components: {
+    Card,
+  },
+  setup() {
+    // const cardList= [] 
+    const cardList=ref([])
+    const userSelection=ref([])
+    const status= ref('')
+    for(let i=0;i<16;i++) cardList.value.push({
+        value: i,
+        visible: false,
+        position: i
+    })
+    const flipCard=(payload)=>{
+      cardList.value[payload.position].visible=true
+
+      if(userSelection.value[0]) {
+        userSelection.value[1]=payload
+      }
+      else {
+        userSelection.value[0]=payload
+      }
+    }
+    watch(userSelection, (currentValue)=>{
+      console.log(currentValue)
+      if(currentValue.length===2) {
+        const cardOne=currentValue[0]
+        const cardTwo=currentValue[1]
+
+        if(cardOne.faceValue===cardTwo.faceValue) {
+          status.value='Matched!'
+
+        }
+        else {
+          status.value='Mismatch'
+        }
+        cardList.value[cardOne.position].visible=false
+        cardList.value[cardTwo.position].visible=false
+
+        //console.log("That's it!")
+        userSelection.value.length=0
+      }
+    },{deep:true})
+    
+    return {
+      cardList,
+      flipCard,
+      userSelection,
+      status
+    }
+  },
   data() {
     return {
       darkMode:false,
@@ -122,6 +190,16 @@ export default {
   }
   .sort-orders a.active {
     background: #49b293;
+  }
+
+
+  .game-board {
+    display: grid;
+    grid-template-columns: 100px 100px 100px 100px;
+    grid-template-rows: 100px 100px 100px 100px;
+    column-gap: 30px;
+    row-gap: 30px;
+    justify-content: center;
   }
 </style>
 
