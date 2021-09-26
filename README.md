@@ -1,6 +1,5 @@
 # bare-g-todo
 
-## Project setup
 ```
 npm install
 npm run serve
