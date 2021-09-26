@@ -8,10 +8,14 @@
         :visible="card.visible"
         @select-card="flipCard"
         :position="card.position"
+        :matched="card.matched"
         :value="card.value" />
     </section>
+    <button @click="shuffleCards" >Shuffle Cards</button>
+    <button @click="restartGame" >Restart Game</button>
     <h2> {{userSelection}}  </h2>
     <h2> {{status}}  </h2>
+    <p>remainingPairs: {{remainingPairs}} </p>
 
     <br>
 
@@ -57,8 +61,8 @@
 </template>
 
 <script>
-
-import {ref,watch} from 'vue'
+import _ from 'lodash'
+import {ref,watch,computed} from 'vue'
 import Card from './Card'
 export default {
   name: 'About',
@@ -69,17 +73,79 @@ export default {
     // const cardList= [] 
     const cardList=ref([])
     const userSelection=ref([])
-    const status= ref('')
-    for(let i=0;i<16;i++) cardList.value.push({
-        value: i,
-        visible: false,
-        position: i
+    //const status= ref('')
+    const status=computed(()=>{
+      if(remainingPairs.value==0) return 'Player wins!'
+      else return `Remaining Pairs: ${remainingPairs.value}`
+
     })
+    const remainingPairs=computed(()=>{
+      const remainingCards=cardList.value.filter(card=>card.matched===false).length
+      return remainingCards/2
+
+    })
+    const shuffleCards = ()=>{
+      cardList.value=_.shuffle(cardList.value)
+
+    }
+    const restartGame=()=>{
+      shuffleCards()
+      cardList.value=cardList.value.map((card,index)=>{
+        return {
+          ...card,
+          matched: false,
+          visible: false,
+          position: index,
+        }
+      })
+
+    }
+
+    const cardItems = [1,2,3,4,5,6,7,8]
+    cardItems.forEach(item=>{
+      cardList.value.push({
+          value: item,
+          visible: false,
+          position: null,
+          matched: false
+
+      })  
+      cardList.value.push({
+          value: item,
+          visible: false,
+          position: null,
+          matched: false
+
+      })  
+      
+    })
+
+    cardList.value=cardList.value.map((card,index)=>{
+      return {
+        ...card,
+        position: index
+      }
+    })
+
+    // for(let i=0;i<16;i++) cardList.value.push({
+    //     value: 8,
+    //     visible: false,
+    //     position: i,
+    //     matched: false
+
+    // })
     const flipCard=(payload)=>{
       cardList.value[payload.position].visible=true
 
       if(userSelection.value[0]) {
-        userSelection.value[1]=payload
+        //
+        if( userSelection.value[0].position===payload.position  &&
+             userSelection.value[0].faceValue ===   payload.faceValue) {
+          return
+        } 
+        else {
+          userSelection.value[1]=payload
+        }
       }
       else {
         userSelection.value[0]=payload
@@ -92,14 +158,19 @@ export default {
         const cardTwo=currentValue[1]
 
         if(cardOne.faceValue===cardTwo.faceValue) {
-          status.value='Matched!'
-
+          //status.value='Matched!'
+          cardList.value[cardOne.position].matched=true
+          cardList.value[cardTwo.position].matched=true
         }
         else {
-          status.value='Mismatch'
+
+          //status.value='Mismatch'
+          setTimeout(()=>{
+          cardList.value[cardOne.position].visible=false
+          cardList.value[cardTwo.position].visible=false
+          },2000)
+
         }
-        cardList.value[cardOne.position].visible=false
-        cardList.value[cardTwo.position].visible=false
 
         //console.log("That's it!")
         userSelection.value.length=0
@@ -110,7 +181,10 @@ export default {
       cardList,
       flipCard,
       userSelection,
-      status
+      status,
+      //remainingPairs
+      shuffleCards,
+      restartGame,
     }
   },
   data() {

@@ -1,6 +1,6 @@
 <script>
     export default {
-        props: ['value','visible','position'],
+        props: ['value','visible','position','matched'],
         setup(props,context) {
              /* const visible=false
             return {
@@ -24,7 +24,7 @@
 <template>
     <div class="card" @click="selectCard" >
         <div v-if="visible" class="card-face is-front">
-            {{value}}
+            {{value}} - {{position}}  - {{matched}}
 
         </div>
         <div v-else class="card-face is-back">
